@@ -60,6 +60,16 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
+## ⚠️ Configuration requise pour Lovable
+
+**Important**: Si vous ouvrez ce projet dans Lovable, vous devez configurer les variables d'environnement Supabase pour que l'application fonctionne correctement.
+
+Voir le guide complet: **[LOVABLE_SETUP.md](./LOVABLE_SETUP.md)**
+
+Variables nécessaires:
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_PUBLISHABLE_KEY`
+
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
