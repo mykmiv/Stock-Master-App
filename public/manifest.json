@@ -1,0 +1,37 @@
+{
+  "name": "StockMaster AI - Trading Learning App",
+  "short_name": "StockMaster",
+  "description": "Apprenez le trading avec des leçons interactives et un scanner AI",
+  "start_url": "/learn",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4F46E5",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "192x192 512x512",
+      "type": "image/x-icon",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "finance"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Learn",
+      "short_name": "Learn",
+      "description": "Accéder aux leçons",
+      "url": "/learn",
+      "icons": [{ "src": "/favicon.ico", "sizes": "96x96" }]
+    },
+    {
+      "name": "Scanner",
+      "short_name": "Scanner",
+      "description": "Scanner AI",
+      "url": "/scanner",
+      "icons": [{ "src": "/favicon.ico", "sizes": "96x96" }]
+    }
+  ]
+}

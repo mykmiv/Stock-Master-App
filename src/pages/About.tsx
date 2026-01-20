@@ -15,11 +15,6 @@ const features = [
     description: '50+ lessons verified by experienced traders',
   },
   {
-    icon: '🌉',
-    title: 'Bridge to Real Trading',
-    description: 'Detailed guides to open accounts with real brokers',
-  },
-  {
     icon: '💰',
     title: 'Ethical Pricing',
     description: 'Transparent plans from $4.99/week, generous free tier, 7-day refund',

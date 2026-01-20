@@ -42,7 +42,7 @@ export function DaySection({ day, currentLessonRef, onLessonClick, isCurrentDay 
       </div>
 
       {/* Lessons in zigzag pattern */}
-      <div className="space-y-6">
+      <div className="space-y-12 sm:space-y-16 md:space-y-20 lg:space-y-24 xl:space-y-28">
         {day.lessons.map((lesson, index) => {
           const lessonWithPosition = {
             ...lesson,

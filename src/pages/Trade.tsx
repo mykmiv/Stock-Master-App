@@ -7,9 +7,10 @@ import { TradeForm } from '@/components/trade/TradeForm';
 import { HoldingsTable } from '@/components/trade/HoldingsTable';
 import { TradeHistory } from '@/components/trade/TradeHistory';
 import { WatchlistPanel } from '@/components/trade/WatchlistPanel';
+import { TradePerformanceChart } from '@/components/trade/TradePerformanceChart';
 import { usePortfolio } from '@/hooks/usePortfolio';
 import { useWatchlist } from '@/hooks/useWatchlist';
-import { Wallet, History, Eye } from 'lucide-react';
+import { Wallet, History, Eye, TrendingUp } from 'lucide-react';
 
 export default function Trade() {
   const { portfolio, isLoading, executeTrade, trades } = usePortfolio();
@@ -48,14 +49,6 @@ export default function Trade() {
   return (
     <MainLayout>
       <div className="space-y-6 fade-in">
-        {/* Header */}
-        <div className="space-y-1">
-          <h1 className="font-display text-3xl font-bold">Paper Trading</h1>
-          <p className="text-muted-foreground">
-            Practice trading with $100,000 virtual money
-          </p>
-        </div>
-
         {/* Portfolio Summary */}
         <PortfolioSummary
           totalValue={portfolio?.totalValue || 100000}
@@ -65,6 +58,9 @@ export default function Trade() {
           totalPnlPercent={portfolio?.totalPnlPercent || 0}
           isLoading={isLoading}
         />
+
+        {/* Performance Chart */}
+        <TradePerformanceChart />
 
         {/* Main Content Grid */}
         <div className="grid gap-6 lg:grid-cols-3">

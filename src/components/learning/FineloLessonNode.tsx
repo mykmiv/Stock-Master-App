@@ -3,8 +3,7 @@ import {
   Check, 
   BookOpen, 
   Star,
-  Sparkles,
-  Zap
+  Crown
 } from 'lucide-react';
 import { LessonWithProgress } from '@/types/lesson.types';
 
@@ -29,58 +28,28 @@ export function FineloLessonNode({ lesson, isFirst = false, index = 0, isLastOfD
   const isLeft = (index || 0) % 2 === 0;
 
   const getLessonIcon = () => {
-    // Last lesson of the day gets stars
+    // Last lesson of the chapter gets crown (but gray like others)
     if (isLastOfDay) {
       return (
-        <div className="relative">
-          <Sparkles 
-            className="w-16 h-16 text-white drop-shadow-xl" 
-            strokeWidth={2.5} 
-            fill="white"
-          />
-          {/* Extra sparkle effect */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Star 
-              className="w-8 h-8 text-yellow-200 animate-pulse" 
-              fill="currentColor"
-            />
-          </div>
-        </div>
-      );
-    }
-    
-    // Completed lessons get checkmark
-    if (status === 'completed') {
-      return (
-        <Check 
-          className="w-16 h-16 text-white drop-shadow-lg" 
-          strokeWidth={4} 
+        <Crown 
+          className="w-7 h-7 text-white drop-shadow-lg" 
+          strokeWidth={2.5} 
+          fill="white"
         />
       );
     }
     
-    // Not done (locked or current) gets book
+    // All other lessons get book (regardless of status - completed or not)
     return (
       <BookOpen 
-        className="w-14 h-14 text-white drop-shadow-lg" 
+        className="w-7 h-7 text-white drop-shadow-lg" 
         strokeWidth={2.5} 
       />
     );
   };
 
   const getNodeConfig = () => {
-    // Last lesson of day - STARS!
-    if (isLastOfDay) {
-      return {
-        bg: 'bg-gradient-to-br from-amber-400 via-yellow-500 to-orange-500',
-        shadow: 'shadow-2xl shadow-amber-400/60',
-        ring: 'ring-6 ring-yellow-300/70',
-        pulse: true,
-        glow: true,
-        label: status === 'completed' ? '🎉 Day Complete!' : '⭐ Day Final'
-      };
-    }
-
+    // Last lesson of chapter - same style as other lessons (no special treatment)
     // Perfect score
     if (isPerfect && status === 'completed') {
       return {
@@ -126,16 +95,16 @@ export function FineloLessonNode({ lesson, isFirst = false, index = 0, isLastOfD
     <div className="relative group">
       {/* Stars for Perfect Score - ABOVE circle (only if not last of day) */}
       {isPerfect && status === 'completed' && !isLastOfDay && (
-        <div className="absolute -top-12 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
+        <div className="absolute -top-8 left-1/2 -translate-x-1/2 flex gap-1 z-20">
           {[1, 2, 3].map((i) => (
             <div key={i} className="relative">
               <Star
-                className="w-7 h-7 text-yellow-400 fill-yellow-400 drop-shadow-lg animate-star-pop"
+                className="w-4 h-4 text-yellow-400 fill-yellow-400 drop-shadow-lg animate-star-pop"
                 style={{ 
                   animationDelay: `${i * 0.15}s` 
                 }}
               />
-              <div className="absolute inset-0 bg-yellow-300/50 blur-md rounded-full animate-pulse" />
+              <div className="absolute inset-0 bg-yellow-300/50 blur-sm rounded-full animate-pulse" />
             </div>
           ))}
         </div>
@@ -144,9 +113,9 @@ export function FineloLessonNode({ lesson, isFirst = false, index = 0, isLastOfD
       {/* Pulse Rings for active lessons */}
       {config.pulse && (
         <div className="absolute inset-0 flex items-center justify-center -z-10">
-          <span className="absolute w-36 h-36 rounded-full bg-purple-400/40 animate-ping" />
+          <span className="absolute w-20 h-20 rounded-full bg-purple-400/40 animate-ping" />
           <span 
-            className="absolute w-32 h-32 rounded-full bg-indigo-500/30 animate-pulse" 
+            className="absolute w-18 h-18 rounded-full bg-indigo-500/30 animate-pulse" 
             style={{ animationDuration: '2s', animationDelay: '0.5s' }} 
           />
         </div>
@@ -164,7 +133,7 @@ export function FineloLessonNode({ lesson, isFirst = false, index = 0, isLastOfD
           disabled={status === 'locked'}
           className={`
             relative
-            w-28 h-28 rounded-full
+            w-14 h-14 rounded-full
             ${config.bg}
             ${config.shadow}
             ${config.ring}
@@ -183,18 +152,18 @@ export function FineloLessonNode({ lesson, isFirst = false, index = 0, isLastOfD
 
         {/* XP Badge - Top Right Corner */}
         {xpReward && status !== 'locked' && (
-          <div className="absolute -top-2 -right-2 z-20">
+          <div className="absolute -top-1 -right-1 z-20">
             <div className="relative">
-              <div className="absolute inset-0 bg-purple-500 rounded-full blur-md opacity-75" />
-              <div className="relative bg-gradient-to-br from-purple-500 to-pink-600 text-white text-xs font-black px-3 py-1.5 rounded-full shadow-xl border-2 border-white">
+              <div className="absolute inset-0 bg-purple-500 rounded-full blur-sm opacity-75" />
+              <div className="relative bg-gradient-to-br from-purple-500 to-pink-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-lg border border-white">
                 +{xpReward}
               </div>
             </div>
           </div>
         )}
 
-        {/* Labels - SIDE POSITION (with label from config) */}
-        {config.label && (
+        {/* Labels - SIDE POSITION (with label from config) - NO LABEL FOR LAST OF CHAPTER */}
+        {config.label && !isLastOfDay && (
           <div className={`
             absolute top-1/2 -translate-y-1/2 z-20
             ${isLeft ? '-right-40' : '-left-40'}
@@ -203,15 +172,13 @@ export function FineloLessonNode({ lesson, isFirst = false, index = 0, isLastOfD
               {/* Glow based on lesson type */}
               <div className={`
                 absolute inset-0 rounded-xl blur-md opacity-50
-                ${isLastOfDay ? 'bg-amber-500' : isPerfect ? 'bg-green-500' : 'bg-indigo-500'}
+                ${isPerfect ? 'bg-green-500' : 'bg-indigo-500'}
               `} />
               
               {/* Label Card */}
               <div className={`
                 relative px-4 py-2.5 rounded-xl shadow-xl border-2 border-white/40 backdrop-blur-sm
-                ${isLastOfDay 
-                  ? 'bg-gradient-to-r from-amber-500 to-orange-500' 
-                  : isPerfect
+                ${isPerfect
                   ? 'bg-gradient-to-r from-green-500 to-emerald-600'
                   : 'bg-gradient-to-r from-indigo-600 to-purple-600'
                 }
@@ -231,10 +198,10 @@ export function FineloLessonNode({ lesson, isFirst = false, index = 0, isLastOfD
                   w-0 h-0 
                   ${isLeft 
                     ? `border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-r-[12px] ${
-                        isLastOfDay ? 'border-r-orange-500' : isPerfect ? 'border-r-emerald-600' : 'border-r-purple-600'
+                        isPerfect ? 'border-r-emerald-600' : 'border-r-purple-600'
                       }`
                     : `border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-l-[12px] ${
-                        isLastOfDay ? 'border-l-orange-500' : isPerfect ? 'border-l-emerald-600' : 'border-l-purple-600'
+                        isPerfect ? 'border-l-emerald-600' : 'border-l-purple-600'
                       }`
                   }
                 `} />
@@ -257,9 +224,7 @@ export function FineloLessonNode({ lesson, isFirst = false, index = 0, isLastOfD
             {/* Glow effect */}
             <div className={`
               absolute inset-0 rounded-2xl blur-xl
-              ${isLastOfDay 
-                ? 'bg-amber-500/30' 
-                : status === 'completed' 
+              ${status === 'completed' 
                 ? 'bg-indigo-500/20' 
                 : 'bg-purple-500/20'
               }
@@ -269,26 +234,13 @@ export function FineloLessonNode({ lesson, isFirst = false, index = 0, isLastOfD
             <div className={`
               relative bg-white rounded-2xl shadow-2xl p-4
               border-2 ${
-                isLastOfDay
-                  ? 'border-amber-400'
-                  : status === 'completed' 
+                status === 'completed' 
                   ? 'border-green-400' 
                   : status === 'current' 
                   ? 'border-indigo-500' 
                   : 'border-gray-300'
               }
             `}>
-              {/* Day Final Badge */}
-              {isLastOfDay && (
-                <div className="mb-3 pb-3 border-b border-amber-100">
-                  <div className="flex items-center gap-2 bg-amber-50 px-3 py-2 rounded-lg">
-                    <Sparkles className="w-4 h-4 text-amber-600" fill="currentColor" />
-                    <span className="text-xs font-bold text-amber-700 uppercase tracking-wide">
-                      Day Completion Lesson
-                    </span>
-                  </div>
-                </div>
-              )}
 
               {/* Header */}
               <div className="flex items-start justify-between mb-2">
@@ -303,13 +255,7 @@ export function FineloLessonNode({ lesson, isFirst = false, index = 0, isLastOfD
                 
                 {status === 'completed' && (
                   <div className="flex-shrink-0 ml-2">
-                    <div className={`
-                      text-xs font-bold px-2.5 py-1 rounded-lg flex items-center gap-1
-                      ${isLastOfDay 
-                        ? 'bg-amber-100 text-amber-700' 
-                        : 'bg-green-100 text-green-700'
-                      }
-                    `}>
+                    <div className="text-xs font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 bg-green-100 text-green-700">
                       <Check className="w-3 h-3" />
                       Done
                     </div>
@@ -320,21 +266,9 @@ export function FineloLessonNode({ lesson, isFirst = false, index = 0, isLastOfD
               {/* Rewards */}
               {xpReward && (
                 <div className="flex items-center gap-3 pt-3 mt-3 border-t border-gray-100">
-                  <div className={`
-                    flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg
-                    ${isLastOfDay 
-                      ? 'bg-amber-50' 
-                      : 'bg-purple-50'
-                    }
-                  `}>
-                    <Sparkles className={`
-                      w-4 h-4
-                      ${isLastOfDay ? 'text-amber-500' : 'text-purple-500'}
-                    `} />
-                    <span className={`
-                      text-xs font-bold
-                      ${isLastOfDay ? 'text-amber-700' : 'text-purple-700'}
-                    `}>
+                  <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-purple-50">
+                    <Star className="w-4 h-4 text-purple-500 fill-purple-500" />
+                    <span className="text-xs font-bold text-purple-700">
                       +{xpReward} XP
                     </span>
                   </div>

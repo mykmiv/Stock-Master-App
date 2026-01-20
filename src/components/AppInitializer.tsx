@@ -1,7 +1,8 @@
-// Component that runs once on app initialization to seed lessons
+// Component that runs once on app initialization to seed lessons and badges
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { autoSeedLessons } from '@/lib/autoSeedLessons';
+import { seedBadges, needsSeeding } from '@/lib/seedDatabase';
 
 export function AppInitializer() {
   const { user } = useAuth();
@@ -13,11 +14,27 @@ export function AppInitializer() {
       const timer = setTimeout(async () => {
         try {
           console.log('🚀 App initializer: Starting auto-seed...');
-          const result = await autoSeedLessons();
-          if (result.success) {
+          
+          // Seed badges first
+          const needsBadgeSeed = await needsSeeding();
+          if (needsBadgeSeed) {
+            console.log('🌱 Seeding badges...');
+            const badgeResult = await seedBadges();
+            if (badgeResult.success) {
+              console.log(`✅ Badges seeded: ${badgeResult.count} badges created`);
+            } else {
+              console.warn('⚠️ Badge seeding failed:', badgeResult.error);
+            }
+          } else {
+            console.log('✅ Badges already exist, skipping...');
+          }
+          
+          // Then seed lessons
+          const lessonResult = await autoSeedLessons();
+          if (lessonResult.success) {
             console.log('✅ Auto-seed completed successfully');
           } else {
-            console.warn('⚠️ Auto-seed completed with warnings:', result.message);
+            console.warn('⚠️ Auto-seed completed with warnings:', lessonResult.message);
           }
         } catch (error) {
           console.error('❌ Auto-seed failed:', error);

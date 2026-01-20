@@ -45,15 +45,11 @@ export function usePortfolioSnapshots(): UsePortfolioSnapshotsReturn {
         return;
       }
 
-      // Get snapshots for the last 30 days
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
+      // Get all snapshots
       const { data, error } = await supabase
         .from('portfolio_snapshots')
         .select('*')
         .eq('portfolio_id', portfolio.id)
-        .gte('snapshot_date', thirtyDaysAgo.toISOString().split('T')[0])
         .order('snapshot_date', { ascending: true });
 
       if (error) throw error;

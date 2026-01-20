@@ -22,6 +22,13 @@ export interface Profile {
   perfect_scores: number | null;
   current_level: number | null;
   user_level: number | null;
+  readiness_score?: number | null;
+  learning_path?: string | null;
+  learning_path_description?: string | null;
+  total_lessons_in_path?: number | null;
+  lessons_per_day?: number | null;
+  estimated_completion_days?: number | null;
+  started_learning_at?: string | null;
   created_at: string | null;
   updated_at: string | null;
 }

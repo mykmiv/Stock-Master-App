@@ -67,23 +67,51 @@ export function usePortfolio(): UsePortfolioReturn {
 
     try {
       // Fetch portfolio
-      const { data: portfolioData, error: portfolioError } = await supabase
+      let { data: portfolioData, error: portfolioError } = await supabase
         .from('portfolios')
         .select('*')
         .eq('user_id', user.id)
         .single();
 
-      if (portfolioError) throw portfolioError;
+      // If portfolio doesn't exist, create one
+      if (portfolioError && portfolioError.code === 'PGRST116') {
+        // Portfolio doesn't exist, create a new one
+        const { data: newPortfolio, error: createError } = await supabase
+          .from('portfolios')
+          .insert({
+            user_id: user.id,
+            cash_balance: 100000,
+          })
+          .select()
+          .single();
 
-      // Fetch holdings
+        if (createError) {
+          console.error('Error creating portfolio:', createError);
+          throw createError;
+        }
+
+        portfolioData = newPortfolio;
+      } else if (portfolioError) {
+        throw portfolioError;
+      }
+
+      // Ensure portfolioData exists
+      if (!portfolioData) {
+        throw new Error('Portfolio data is null');
+      }
+
+      // Fetch holdings (may be empty for new portfolio)
       const { data: holdingsData, error: holdingsError } = await supabase
         .from('holdings')
         .select('*')
         .eq('portfolio_id', portfolioData.id);
 
-      if (holdingsError) throw holdingsError;
+      if (holdingsError) {
+        console.error('Error fetching holdings:', holdingsError);
+        // Don't throw, just use empty array for new portfolios
+      }
 
-      // Fetch trades
+      // Fetch trades (may be empty for new portfolio)
       const { data: tradesData, error: tradesError } = await supabase
         .from('trades')
         .select('*')
@@ -91,9 +119,12 @@ export function usePortfolio(): UsePortfolioReturn {
         .order('executed_at', { ascending: false })
         .limit(50);
 
-      if (tradesError) throw tradesError;
+      if (tradesError) {
+        console.error('Error fetching trades:', tradesError);
+        // Don't throw, just use empty array
+      }
 
-      // Map holdings with current prices
+      // Map holdings with current prices (handle empty array)
       const holdings: PortfolioHolding[] = (holdingsData || []).map((h) => {
         const stock = mockStocks.find((s) => s.symbol === h.symbol);
         const currentPrice = stock?.price || h.average_cost;
@@ -141,9 +172,78 @@ export function usePortfolio(): UsePortfolioReturn {
           executedAt: t.executed_at,
         }))
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching portfolio:', error);
-      toast.error('Failed to load portfolio');
+      
+      // If portfolio doesn't exist, try to create it silently
+      if (error?.code === 'PGRST116' || error?.message?.includes('No rows') || error?.message?.includes('not found')) {
+        try {
+          const { data: newPortfolio, error: createError } = await supabase
+            .from('portfolios')
+            .insert({
+              user_id: user.id,
+              cash_balance: 100000,
+            })
+            .select()
+            .single();
+
+          if (!createError && newPortfolio) {
+            // Portfolio created, set default values
+            setPortfolio({
+              id: newPortfolio.id,
+              cashBalance: 100000,
+              holdings: [],
+              totalValue: 100000,
+              totalPnl: 0,
+              totalPnlPercent: 0,
+            });
+            setTrades([]);
+            return; // Success, exit early
+          } else if (createError) {
+            console.error('Error creating portfolio:', createError);
+            // Set default portfolio state anyway
+            setPortfolio({
+              id: 'temp-' + user.id,
+              cashBalance: 100000,
+              holdings: [],
+              totalValue: 100000,
+              totalPnl: 0,
+              totalPnlPercent: 0,
+            });
+            setTrades([]);
+            return;
+          }
+        } catch (createErr) {
+          console.error('Error creating portfolio:', createErr);
+          // Set default portfolio state as fallback
+          setPortfolio({
+            id: 'temp-' + user.id,
+            cashBalance: 100000,
+            holdings: [],
+            totalValue: 100000,
+            totalPnl: 0,
+            totalPnlPercent: 0,
+          });
+          setTrades([]);
+          return;
+        }
+      }
+      
+      // Only show error if it's not a "not found" case
+      if (error?.code !== 'PGRST116' && !error?.message?.includes('No rows') && !error?.message?.includes('not found')) {
+        toast.error('Failed to load portfolio');
+      } else {
+        // Set default portfolio state if creation failed
+        setPortfolio({
+          id: 'temp-' + user.id,
+          cashBalance: 100000,
+          holdings: [],
+          totalValue: 100000,
+          totalPnl: 0,
+          totalPnlPercent: 0,
+        });
+        setTrades([]);
+      }
     } finally {
       setIsLoading(false);
     }

@@ -16,10 +16,12 @@ import { toast } from 'sonner';
 import { Lock } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { LEVELS } from '@/types/lesson.types';
-import { lessons1to10Data } from '@/data/lessons1to10';
+import { lessons1to10Data, allLessonsData } from '@/data/lessons1to10';
+import { LearningPathType } from '@/lib/learningPathLogic';
+import { createUserLearningPath } from '@/lib/createUserLearningPath';
 
 export default function Learn() {
-  const { profile, user } = useAuth();
+  const { profile, user, refreshProfile } = useAuth();
   const { lessons: dbLessons, isLoading: dbIsLoading, updateProgress, refreshLessons } = useLessonProgress();
   const { checkAchievements } = useAchievements();
   const { stats, refreshStats } = useUserStats();
@@ -32,35 +34,45 @@ export default function Learn() {
 
   // Convert local lessons data to LessonWithProgress format
   const localLessons: LessonWithProgress[] = useMemo(() => {
-    return lessons1to10Data.map((lessonData, index) => {
-      // Generate a unique ID based on lesson identifier
-      const id = `lesson-${lessonData.module_id}-${lessonData.day_number}-${lessonData.lesson_number}`;
-      
-      // First lesson is always unlocked
-      const isLocked = index === 0 ? false : lessonData.is_locked;
-      
-      return {
-        id,
-        module_id: lessonData.module_id,
-        day_number: lessonData.day_number,
-        lesson_number: lessonData.lesson_number,
-        title: lessonData.title,
-        description: lessonData.description,
-        lesson_type: lessonData.lesson_type,
-        content_json: lessonData.content_json,
-        min_score_to_pass: lessonData.min_score_to_pass,
-        xp_reward: lessonData.xp_reward,
-        coin_reward: lessonData.coin_reward,
-        is_locked: isLocked,
-        unlock_requirement: lessonData.unlock_requirement,
-        estimated_duration_minutes: lessonData.estimated_duration_minutes,
-        created_at: new Date().toISOString(),
-        progress: null,
-        isCompleted: false,
-        isLocked: isLocked,
-        isCurrent: index === 0, // First lesson is current
-      };
-    });
+    try {
+      if (!allLessonsData || allLessonsData.length === 0) {
+        console.warn('No lessons data available');
+        return [];
+      }
+
+      return allLessonsData.map((lessonData, index) => {
+        // Generate a unique ID based on lesson identifier
+        const id = `lesson-${lessonData.module_id || 1}-${lessonData.day_number || 1}-${lessonData.lesson_number || index + 1}`;
+        
+        // First lesson is always unlocked
+        const isLocked = index === 0 ? false : (lessonData.is_locked ?? true);
+        
+        return {
+          id,
+          module_id: lessonData.module_id || 1,
+          day_number: lessonData.day_number || 1,
+          lesson_number: lessonData.lesson_number || index + 1,
+          title: lessonData.title || `Leçon ${index + 1}`,
+          description: lessonData.description || '',
+          lesson_type: lessonData.lesson_type || 'mixed',
+          content_json: lessonData.content_json || [],
+          min_score_to_pass: lessonData.min_score_to_pass || 70,
+          xp_reward: lessonData.xp_reward || 10,
+          coin_reward: lessonData.coin_reward || 5,
+          is_locked: isLocked,
+          unlock_requirement: lessonData.unlock_requirement,
+          estimated_duration_minutes: lessonData.estimated_duration_minutes || 5,
+          created_at: new Date().toISOString(),
+          progress: null,
+          isCompleted: false,
+          isLocked: isLocked,
+          isCurrent: index === 0, // First lesson is current
+        };
+      });
+    } catch (error) {
+      console.error('Error processing lessons data:', error);
+      return [];
+    }
   }, []);
 
   // Always use local lessons (they are hardcoded and always available)
@@ -220,11 +232,48 @@ export default function Learn() {
     );
   }
 
+  const currentPath = (profile?.learning_path as LearningPathType) || 'zero_to_hero';
+
+  const handlePathChange = async (newPath: LearningPathType) => {
+    if (!user) {
+      toast.error('Vous devez être connecté pour changer de parcours');
+      return;
+    }
+
+    try {
+      toast.loading('Changement de parcours en cours...');
+      
+      // Create new learning path (this will update profile and user lesson progress)
+      await createUserLearningPath(user.id, {}, 'standard', newPath);
+      
+      // Refresh profile and lessons
+      await refreshProfile();
+      await refreshLessons();
+      
+      toast.dismiss();
+      toast.success(`Parcours changé vers ${newPath === 'zero_to_hero' ? 'Zero to Hero' : newPath}`);
+      
+      // Scroll to top to show the new path
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error) {
+      console.error('Error changing learning path:', error);
+      toast.dismiss();
+      toast.error('Erreur lors du changement de parcours');
+    }
+  };
+
   return (
+<<<<<<< Updated upstream
     <>
       <DuolingoLearningScreen
+=======
+    <MainLayout>
+      <FineloLearningScreen
+>>>>>>> Stashed changes
         lessons={lessons}
         onLessonClick={handleLessonClick}
+        currentPath={currentPath}
+        onPathChange={handlePathChange}
       />
 
       {/* Reward Animations */}
@@ -239,6 +288,6 @@ export default function Learn() {
           onClose={() => setLevelUp(null)}
         />
       )}
-    </>
+    </MainLayout>
   );
 }

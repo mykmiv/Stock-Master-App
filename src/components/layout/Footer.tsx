@@ -56,11 +56,6 @@ export function Footer() {
                   Learning Hub
                 </Link>
               </li>
-              <li>
-                <Link to="/bridge" className="hover:text-foreground transition-colors">
-                  Bridge to Real Trading
-                </Link>
-              </li>
             </ul>
           </div>
 

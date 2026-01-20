@@ -7,14 +7,13 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { ThemeProvider } from "next-themes";
 
-import Index from "./pages/Index";
+import { Navigate } from "react-router-dom";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import Learn from "./pages/Learn";
 import Scanner from "./pages/Scanner";
 import Trade from "./pages/Trade";
-import Bridge from "./pages/Bridge";
 import Pricing from "./pages/Pricing";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
@@ -28,6 +27,8 @@ import Admin from "./pages/Admin";
 import League from "./pages/League";
 import SeedLessons from "./pages/SeedLessons";
 import Diagnostic from "./pages/Diagnostic";
+import GoLivePage from "./pages/GoLivePage";
+import SelectPath from "./pages/SelectPath";
 import { AppInitializer } from "./components/AppInitializer";
 
 const queryClient = new QueryClient();
@@ -42,16 +43,17 @@ const App = () => (
           <AuthProvider>
             <AppInitializer />
             <Routes>
-              <Route path="/" element={<Index />} />
+              <Route path="/" element={<Navigate to="/learn" replace />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/learn" element={<Learn />} />
+              <Route path="/learn/select-path" element={<ProtectedRoute><SelectPath /></ProtectedRoute>} />
               <Route path="/scanner" element={<ProtectedRoute><Scanner /></ProtectedRoute>} />
               <Route path="/trade" element={<ProtectedRoute><Trade /></ProtectedRoute>} />
-              <Route path="/bridge" element={<ProtectedRoute><Bridge /></ProtectedRoute>} />
               <Route path="/league" element={<ProtectedRoute><League /></ProtectedRoute>} />
+              <Route path="/bridge" element={<ProtectedRoute><GoLivePage /></ProtectedRoute>} />
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />

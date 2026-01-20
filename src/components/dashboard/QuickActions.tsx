@@ -3,7 +3,6 @@ import {
   GraduationCap, 
   ScanLine, 
   LineChart, 
-  Compass,
   ArrowRight,
   Sparkles
 } from 'lucide-react';
@@ -34,14 +33,6 @@ const actions = [
     path: '/trade',
     gradient: 'bg-gradient-emerald',
     iconBg: 'bg-primary',
-  },
-  {
-    title: 'Go Live Guide',
-    description: 'Ready for real trading?',
-    icon: Compass,
-    path: '/bridge',
-    gradient: 'bg-gradient-orange',
-    iconBg: 'bg-warning',
   },
 ];
 

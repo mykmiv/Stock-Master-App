@@ -129,22 +129,6 @@ export default function Scanner() {
         animate={{ opacity: 1, y: 0 }}
         className="space-y-6"
       >
-        {/* Header */}
-        <div className="flex items-center gap-4">
-          <div className="icon-circle bg-secondary">
-            <ScanLine className="h-6 w-6 text-white" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-black flex items-center gap-2">
-              AI Chart Scanner
-              <span className="text-sm font-bold px-2 py-1 rounded-full bg-warning text-black flex items-center gap-1">
-                <Sparkles className="h-3 w-3" /> AI
-              </span>
-            </h1>
-            <p className="text-muted-foreground">Upload a stock chart for AI-powered analysis</p>
-          </div>
-        </div>
-
         {/* Main Content Grid */}
         <div className="grid gap-6 lg:grid-cols-2">
           <ChartUploader

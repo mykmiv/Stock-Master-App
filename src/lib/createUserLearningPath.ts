@@ -23,12 +23,12 @@ interface CreatePathResult {
  */
 export async function createUserLearningPath(
   userId: string,
-  onboardingData: OnboardingData,
+  onboardingData: OnboardingData = {} as OnboardingData,
   learningPace: LearningPace = 'standard',
   overridePath?: LearningPathType
 ): Promise<CreatePathResult> {
-  // 1. Use override path if provided, otherwise determine from onboarding
-  const pathType = overridePath || determineLearningPath(onboardingData);
+  // 1. Use override path if provided, otherwise determine from onboarding (or default to zero_to_hero)
+  const pathType = overridePath || (onboardingData && Object.keys(onboardingData).length > 0 ? determineLearningPath(onboardingData) : 'zero_to_hero');
   const pathConfig = PATH_LESSON_CONFIGS[pathType];
 
   console.log(`Assigned path: ${pathType} (${pathConfig.totalLessons} lessons)`);

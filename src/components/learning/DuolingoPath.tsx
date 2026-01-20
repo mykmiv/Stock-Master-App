@@ -82,10 +82,10 @@ export function DuolingoPath({ lessons, onLessonClick }: DuolingoPathProps) {
         className="overflow-y-auto"
         style={{ height: 'calc(100vh - 140px)' }}
       >
-        <div className="relative max-w-2xl mx-auto px-4 py-8">
+        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 md:px-8 py-8 sm:py-10 md:py-12">
           {/* Central connecting line */}
           <div 
-            className="absolute left-1/2 top-0 bottom-0 w-1 -translate-x-1/2 z-0"
+            className="absolute left-1/2 top-0 bottom-0 w-2.5 sm:w-3 md:w-3.5 lg:w-4 xl:w-4.5 -translate-x-1/2 z-0"
             style={{
               background: 'linear-gradient(to bottom, #10B981 0%, #F59E0B 30%, #9CA3AF 100%)'
             }}
