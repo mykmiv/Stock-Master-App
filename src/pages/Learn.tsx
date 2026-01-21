@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { useState, useEffect, useMemo } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { DuolingoLearningScreen } from '@/components/learning/DuolingoLearningScreen';
+import { FineloLearningScreen } from '@/components/learning/FineloLearningScreen';
 import { LessonPlayer } from '@/components/learning/LessonPlayer';
 import { XPGain } from '@/components/rewards/XPGain';
 import { CoinGain } from '@/components/rewards/CoinGain';
@@ -263,13 +263,8 @@ export default function Learn() {
   };
 
   return (
-<<<<<<< Updated upstream
-    <>
-      <DuolingoLearningScreen
-=======
     <MainLayout>
       <FineloLearningScreen
->>>>>>> Stashed changes
         lessons={lessons}
         onLessonClick={handleLessonClick}
         currentPath={currentPath}
